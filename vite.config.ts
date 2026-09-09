@@ -170,7 +170,10 @@ export default defineConfig(({ command, isPreview }) => ({
     ...(command === "build" || isPreview
       ? [
           nitro({
-            preset: "vercel",
+            // Netlify is the deploy target: static assets land in `dist/` and
+            // the server handler in `.netlify/functions-internal/`. Override
+            // with NITRO_PRESET to build for another host.
+            preset: process.env.NITRO_PRESET || "netlify",
             // Auto-registers server/middleware/* (the PWA install page +
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.
