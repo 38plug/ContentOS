@@ -1,0 +1,7 @@
+# Nitro's netlify preset writes the static client output to `dist/` and the
+# server handler to `.netlify/functions-internal/` (picked up automatically).
+# Declaring publish here overrides the UI setting, which pointed at a
+# `dist/client` directory the build never creates.
+[build]
+  command = "npm run build"
+  publish = "dist"
