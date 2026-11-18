@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Clapperboard, Film, LayoutGrid, Library, LogOut, Scissors } from "lucide-react";
+import { CalendarDays, Clapperboard, Film, LayoutGrid, Library, LogOut, Scissors } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
 import { authEnabled, signOut } from "@/lib/auth/client";
@@ -8,13 +8,14 @@ import { useCurrentUser, useCurrentUserState } from "@/lib/auth/use-current-user
 import { cn } from "@/lib/cn";
 
 const NAV: Array<{
-  to: "/" | "/library" | "/clip" | "/clips";
+  to: "/" | "/library" | "/queue" | "/clip" | "/clips";
   label: string;
   icon: typeof LayoutGrid;
   exact?: boolean;
 }> = [
   { to: "/", label: "Studio", icon: LayoutGrid, exact: true },
   { to: "/library", label: "Library", icon: Library },
+  { to: "/queue", label: "Queue", icon: CalendarDays },
   { to: "/clip", label: "Clip", icon: Scissors },
   { to: "/clips", label: "Exports", icon: Film },
 ];

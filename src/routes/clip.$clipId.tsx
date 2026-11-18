@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Copy, Download, RefreshCw } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Copy, Download, Library, RefreshCw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { AppShell, AuthGate } from "@/components/contentos/app-shell";
 import { ClipTimeline } from "@/components/contentos/timeline";
-import { getClip, regenerateSeo, updateClip } from "@/lib/contentos/server";
+import { getClip, regenerateSeo, updateClip, upsertContentItem } from "@/lib/contentos/server";
 import type { Aspect, CaptionCue, Clip, SeoPackage } from "@/lib/contentos/types";
 import { ASPECTS, formatTimecode } from "@/lib/contentos/types";
 import { uid } from "@/lib/id";
@@ -22,6 +22,7 @@ type SeoTab = keyof SeoPackage;
 
 function ClipEditor() {
   const { clipId } = Route.useParams();
+  const navigate = useNavigate();
   const [clip, setClip] = useState<Clip | null>(null);
   const [inSec, setInSec] = useState(0);
   const [outSec, setOutSec] = useState(10);
@@ -59,6 +60,30 @@ function ClipEditor() {
       alive = false;
     };
   }, [clipId]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      if (e.key === "i" || e.key === "I") {
+        setInSec(playhead);
+        setMessage(`In point → ${formatTimecode(playhead)}`);
+      } else if (e.key === "o" || e.key === "O") {
+        const nextOut = Math.max(playhead, inSec + 1);
+        setOutSec(nextOut);
+        setMessage(`Out point → ${formatTimecode(nextOut)}`);
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        setPlayhead((p) => Math.max(0, p - (e.shiftKey ? 1 : 0.25)));
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        const max = clip?.source?.durationSec ?? outSec;
+        setPlayhead((p) => Math.min(max, p + (e.shiftKey ? 1 : 0.25)));
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [playhead, inSec, outSec, clip]);
 
   const activeCaption = useMemo(
     () => captions.find((c) => playhead >= c.startSec && playhead <= c.endSec)?.text ?? "",
@@ -141,6 +166,33 @@ function ClipEditor() {
     setMessage("Downloaded edit decision package");
   }
 
+  async function addToLibrary() {
+    if (!clip) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const platform =
+        aspect === "9:16" ? ("shorts" as const) : aspect === "1:1" ? ("instagram" as const) : ("youtube" as const);
+      const saved = await upsertContentItem({
+        data: {
+          title: clip.title,
+          platform,
+          status: "draft",
+          notes: `From clip ${clip.id} · ${formatTimecode(inSec)}–${formatTimecode(outSec)} · ${aspect}`,
+          views: 0,
+          likes: 0,
+          comments: 0,
+        },
+      });
+      setMessage("Added to library as draft");
+      void navigate({ to: "/library", search: { id: saved.id } });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not add to library");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const variant = seo?.[seoTab];
 
   return (
@@ -200,6 +252,10 @@ function ClipEditor() {
               onScrub={setPlayhead}
             />
 
+            <p className="sub" style={{ marginTop: 10 }}>
+              Keys: <span className="cos-kbd">I</span> set in · <span className="cos-kbd">O</span> set out ·{" "}
+              <span className="cos-kbd">←</span>/<span className="cos-kbd">→</span> nudge playhead (Shift = 1s)
+            </p>
             <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
               <button
                 type="button"
@@ -212,6 +268,9 @@ function ClipEditor() {
               </button>
               <button type="button" className="cos-btn secondary" onClick={downloadPackage}>
                 <Download size={15} /> Export package
+              </button>
+              <button type="button" className="cos-btn secondary" disabled={busy} onClick={() => void addToLibrary()}>
+                <Library size={15} /> Add to library
               </button>
             </div>
 

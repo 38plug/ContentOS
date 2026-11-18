@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ClipsRouteImport } from './routes/clips'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as QueueRouteImport } from './routes/queue'
 import { Route as ClipIndexRouteImport } from './routes/clip.index'
 import { Route as ClipClipIdRouteImport } from './routes/clip.$clipId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -37,6 +38,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QueueRoute = QueueRouteImport.update({
+  id: '/queue',
+  path: '/queue',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ClipIndexRoute = ClipIndexRouteImport.update({
   id: '/clip/',
   path: '/clip/',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/clips': typeof ClipsRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
+  '/queue': typeof QueueRoute
   '/clip/$clipId': typeof ClipClipIdRoute
   '/clip/': typeof ClipIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/clips': typeof ClipsRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
+  '/queue': typeof QueueRoute
   '/clip/$clipId': typeof ClipClipIdRoute
   '/clip': typeof ClipIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/clips': typeof ClipsRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
+  '/queue': typeof QueueRoute
   '/clip/$clipId': typeof ClipClipIdRoute
   '/clip/': typeof ClipIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/clips'
     | '/library'
     | '/login'
+    | '/queue'
     | '/clip/$clipId'
     | '/clip/'
     | '/api/auth/$'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/clips'
     | '/library'
     | '/login'
+    | '/queue'
     | '/clip/$clipId'
     | '/clip'
     | '/api/auth/$'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/clips'
     | '/library'
     | '/login'
+    | '/queue'
     | '/clip/$clipId'
     | '/clip/'
     | '/api/auth/$'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   ClipsRoute: typeof ClipsRoute
   LibraryRoute: typeof LibraryRoute
   LoginRoute: typeof LoginRoute
+  QueueRoute: typeof QueueRoute
   ClipClipIdRoute: typeof ClipClipIdRoute
   ClipIndexRoute: typeof ClipIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -151,6 +164,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/queue': {
+      id: '/queue'
+      path: '/queue'
+      fullPath: '/queue'
+      preLoaderRoute: typeof QueueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/clip/': {
       id: '/clip/'
       path: '/clip'
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   ClipsRoute: ClipsRoute,
   LibraryRoute: LibraryRoute,
   LoginRoute: LoginRoute,
+  QueueRoute: QueueRoute,
   ClipClipIdRoute: ClipClipIdRoute,
   ClipIndexRoute: ClipIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

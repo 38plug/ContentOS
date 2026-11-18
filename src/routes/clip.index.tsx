@@ -6,6 +6,7 @@ import {
   analyzeYoutube,
   createClipFromMoment,
   listSources,
+  reanalyzeSourceDuration,
 } from "@/lib/contentos/server";
 import type { ViralMoment, YoutubeSource } from "@/lib/contentos/types";
 import { formatTimecode, reasonLabel } from "@/lib/contentos/types";
@@ -29,6 +30,7 @@ function ClipAnalyze() {
   const [moments, setMoments] = useState<ViralMoment[]>([]);
   const [history, setHistory] = useState<YoutubeSource[]>([]);
   const [durationEstimated, setDurationEstimated] = useState(false);
+  const [durationInput, setDurationInput] = useState("");
 
   useEffect(() => {
     void listSources()
@@ -36,17 +38,48 @@ function ClipAnalyze() {
       .catch(() => undefined);
   }, []);
 
-  async function analyze() {
+  async function analyze(durationOverride?: number) {
     setBusy(true);
     setError(null);
     try {
-      const result = await analyzeYoutube({ data: { url } });
+      const result = await analyzeYoutube({
+        data: {
+          url,
+          ...(durationOverride && durationOverride > 0 ? { durationSec: durationOverride } : {}),
+        },
+      });
       setSource(result.source);
       setMoments(result.moments);
       setDurationEstimated(Boolean(result.durationEstimated));
+      setDurationInput(String(result.source.durationSec));
       setHistory((h) => [result.source, ...h.filter((s) => s.id !== result.source.id)]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Analyze failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function applyDuration() {
+    if (!source) return;
+    const durationSec = Number(durationInput);
+    if (!(durationSec > 0)) {
+      setError("Enter duration in seconds (e.g. 19 or 612)");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await reanalyzeSourceDuration({
+        data: { sourceId: source.id, durationSec },
+      });
+      setSource(result.source);
+      setMoments(result.moments);
+      setDurationEstimated(false);
+      setDurationInput(String(result.source.durationSec));
+      setHistory((h) => [result.source, ...h.filter((s) => s.id !== result.source.id)]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not update duration");
     } finally {
       setBusy(false);
     }
@@ -93,7 +126,11 @@ function ClipAnalyze() {
               {busy ? "Analyzing…" : "Analyze"}
             </button>
           </div>
-          {error ? <p className="cos-error" style={{ marginTop: 12 }}>{error}</p> : null}
+          {error ? (
+            <p className="cos-error" style={{ marginTop: 12 }}>
+              {error}
+            </p>
+          ) : null}
 
           {source ? (
             <div style={{ marginTop: 18, display: "grid", gridTemplateColumns: "160px 1fr", gap: 14 }}>
@@ -106,11 +143,38 @@ function ClipAnalyze() {
                 </p>
                 {durationEstimated ? (
                   <p className="sub" style={{ color: "var(--color-lime)" }}>
-                    Exact runtime was blocked by YouTube metadata — moments use an estimated length. Trim precisely in the
-                    editor.
+                    Exact runtime was blocked by YouTube — set the real length to rebuild moment windows.
                   </p>
                 ) : null}
-                <a className="cos-btn ghost" href={source.youtubeUrl} target="_blank" rel="noreferrer" style={{ marginTop: 8, display: "inline-flex" }}>
+                <div className="cos-form-grid" style={{ marginTop: 12, maxWidth: 420 }}>
+                  <div className="cos-field">
+                    <label htmlFor="dur">Duration (seconds)</label>
+                    <input
+                      id="dur"
+                      type="number"
+                      min={1}
+                      value={durationInput}
+                      onChange={(e) => setDurationInput(e.target.value)}
+                    />
+                  </div>
+                  <div className="cos-field" style={{ alignSelf: "end" }}>
+                    <button
+                      type="button"
+                      className="cos-btn secondary"
+                      disabled={busy}
+                      onClick={() => void applyDuration()}
+                    >
+                      Rebuild moments
+                    </button>
+                  </div>
+                </div>
+                <a
+                  className="cos-btn ghost"
+                  href={source.youtubeUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ marginTop: 8, display: "inline-flex" }}
+                >
                   Open source
                 </a>
               </div>
@@ -147,15 +211,24 @@ function ClipAnalyze() {
                 key={s.id}
                 type="button"
                 className="cos-row"
-                style={{ width: "100%", textAlign: "left", background: "transparent", border: 0, color: "inherit" }}
+                style={{
+                  width: "100%",
+                  textAlign: "left",
+                  background: "transparent",
+                  border: 0,
+                  color: "inherit",
+                }}
                 onClick={() => {
                   setUrl(s.youtubeUrl);
                   setSource(s);
                   setMoments([]);
+                  setDurationInput(String(s.durationSec));
                   void analyzeYoutube({ data: { url: s.youtubeUrl } })
                     .then((result) => {
                       setSource(result.source);
                       setMoments(result.moments);
+                      setDurationEstimated(Boolean(result.durationEstimated));
+                      setDurationInput(String(result.source.durationSec));
                     })
                     .catch((err) => setError(err instanceof Error ? err.message : "Reload failed"));
                 }}

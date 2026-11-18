@@ -8,7 +8,24 @@ import { buildDemoClipBundle, demoContentItems } from "./seed";
 import { buildSeoPackage, suggestedFileName } from "./seo";
 import type { Aspect, CaptionCue, DashboardStats, Platform, SeoPackage, Status } from "./types";
 import { ASPECTS, PLATFORMS, STATUSES } from "./types";
+import { enhanceMomentReasons } from "./xai-moments";
 import { resolveYoutubeMeta } from "./youtube";
+
+async function buildMomentsForSource(
+  userId: string,
+  sourceId: string,
+  title: string,
+  channelTitle: string | null,
+  durationSec: number,
+) {
+  const drafts = await enhanceMomentReasons(
+    title,
+    channelTitle,
+    durationSec,
+    heuristicMoments(durationSec, title),
+  );
+  return draftsToMoments(drafts, sourceId, userId);
+}
 
 async function ensureSeeded(userId: string) {
   const sql = await getSql();
@@ -174,13 +191,20 @@ export const deleteContentItem = createServerFn({ method: "POST" })
 
 export const analyzeYoutube = createServerFn({ method: "POST" })
   .middleware([authMiddleware])
-  .validator((input: { url: string }) => {
+  .validator((input: { url: string; durationSec?: number }) => {
     if (!input.url?.trim()) throw new Error("YouTube URL required");
+    if (input.durationSec != null && !(input.durationSec > 0)) {
+      throw new Error("Duration must be a positive number of seconds");
+    }
     return input;
   })
   .handler(async ({ context, data }) => {
     await ensureSeeded(context.userId);
     const meta = await resolveYoutubeMeta(data.url);
+    const override =
+      typeof data.durationSec === "number" && data.durationSec > 0 ? Math.round(data.durationSec) : null;
+    const durationSec = override ?? meta.durationSec;
+    const durationEstimated = override ? false : meta.durationEstimated;
     const sql = await getSql();
     const sourceId = uid("yt");
     await sql`
@@ -188,13 +212,15 @@ export const analyzeYoutube = createServerFn({ method: "POST" })
         id, user_id, youtube_url, youtube_id, title, duration_sec, thumbnail_url, channel_title
       ) values (
         ${sourceId}, ${context.userId}, ${meta.youtubeUrl}, ${meta.youtubeId}, ${meta.title},
-        ${meta.durationSec}, ${meta.thumbnailUrl}, ${meta.channelTitle}
+        ${durationSec}, ${meta.thumbnailUrl}, ${meta.channelTitle}
       )
     `;
-    const moments = draftsToMoments(
-      heuristicMoments(meta.durationSec, meta.title),
-      sourceId,
+    const moments = await buildMomentsForSource(
       context.userId,
+      sourceId,
+      meta.title,
+      meta.channelTitle,
+      durationSec,
     );
     for (const m of moments) {
       await sql`
@@ -213,13 +239,62 @@ export const analyzeYoutube = createServerFn({ method: "POST" })
         youtube_url: meta.youtubeUrl,
         youtube_id: meta.youtubeId,
         title: meta.title,
-        duration_sec: meta.durationSec,
+        duration_sec: durationSec,
         thumbnail_url: meta.thumbnailUrl,
         channel_title: meta.channelTitle,
         created_at: new Date().toISOString(),
       }),
       moments,
-      durationEstimated: meta.durationEstimated,
+      durationEstimated,
+    };
+  });
+
+export const reanalyzeSourceDuration = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: { sourceId: string; durationSec: number }) => {
+    if (!input.sourceId) throw new Error("Source required");
+    if (!(input.durationSec > 0)) throw new Error("Duration must be positive");
+    return input;
+  })
+  .handler(async ({ context, data }) => {
+    const sql = await getSql();
+    const durationSec = Math.round(data.durationSec);
+    const sources = await sql`
+      select * from youtube_sources
+      where id = ${data.sourceId} and user_id = ${context.userId}
+      limit 1
+    `;
+    if (!sources[0]) throw new Error("Source not found");
+    const source = mapSource(sources[0]);
+    await sql`
+      update youtube_sources set duration_sec = ${durationSec}
+      where id = ${data.sourceId} and user_id = ${context.userId}
+    `;
+    await sql`
+      delete from viral_moments
+      where source_id = ${data.sourceId} and user_id = ${context.userId}
+    `;
+    const moments = await buildMomentsForSource(
+      context.userId,
+      source.id,
+      source.title,
+      source.channelTitle,
+      durationSec,
+    );
+    for (const m of moments) {
+      await sql`
+        insert into viral_moments (
+          id, source_id, user_id, start_sec, end_sec, score, reason_type, reason_text, rank
+        ) values (
+          ${m.id}, ${m.sourceId}, ${context.userId}, ${m.startSec}, ${m.endSec},
+          ${m.score}, ${m.reasonType}, ${m.reasonText}, ${m.rank}
+        )
+      `;
+    }
+    return {
+      source: { ...source, durationSec },
+      moments,
+      durationEstimated: false,
     };
   });
 

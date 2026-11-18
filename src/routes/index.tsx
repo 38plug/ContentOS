@@ -44,7 +44,10 @@ function StudioHome() {
     <AppShell
       title="Editorial studio"
       action={
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <Link to="/queue" className="cos-btn secondary">
+            Queue
+          </Link>
           <Link to="/library" className="cos-btn secondary">
             <Plus size={16} /> New post
           </Link>
