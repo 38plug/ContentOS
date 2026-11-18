@@ -12,8 +12,14 @@ import { resolveYoutubeMeta } from "./youtube";
 
 async function ensureSeeded(userId: string) {
   const sql = await getSql();
-  const existing = await sql`select user_id from user_seeds where user_id = ${userId} limit 1`;
-  if (existing.length) return;
+  // Claim the per-user seed marker FIRST so concurrent first visits cannot both
+  // insert demo rows. Only the request that wins the insert continues seeding.
+  const claimed = await sql`
+    insert into user_seeds (user_id) values (${userId})
+    on conflict (user_id) do nothing
+    returning user_id
+  `;
+  if (!claimed.length) return;
 
   const posts = demoContentItems(userId);
   for (const p of posts) {
@@ -62,7 +68,6 @@ async function ensureSeeded(userId: string) {
       ${JSON.stringify(c.exportPackage)}::jsonb
     )
   `;
-  await sql`insert into user_seeds (user_id) values (${userId}) on conflict do nothing`;
 }
 
 export const bootstrapWorkspace = createServerFn({ method: "POST" })
