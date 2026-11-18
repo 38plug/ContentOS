@@ -6,3 +6,6 @@ dist/
 screenshots/
 .grok/preview.log
 .grok/preview.pid
+
+attachments/
+artifacts/

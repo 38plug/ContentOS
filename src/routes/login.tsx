@@ -6,15 +6,47 @@ import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
 
-const DEMO_EMAIL = "demo@contentos.dev";
-const DEMO_PASSWORD = "contentos-demo";
-const DEMO_NAME = "Demo Creator";
+type DemoIdentity = { email: string; password: string; name: string };
+
+function mintDemoIdentity(): DemoIdentity {
+  const id =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID().replace(/-/g, "").slice(0, 10)
+      : `${Date.now().toString(36)}`;
+  return {
+    email: `creator-${id}@contentos.local`,
+    password: `cos-${id}-${Math.random().toString(36).slice(2, 10)}`,
+    name: "Studio Creator",
+  };
+}
+
+/** Per-browser identity so demo entry never shares one global account. */
+function getOrCreateDemoIdentity(): DemoIdentity {
+  if (typeof window === "undefined") return mintDemoIdentity();
+  const key = "contentos.demo-identity.v1";
+  try {
+    const raw = window.sessionStorage.getItem(key);
+    if (raw) {
+      const parsed = JSON.parse(raw) as DemoIdentity;
+      if (parsed?.email && parsed?.password && parsed?.name) return parsed;
+    }
+  } catch {
+    /* ignore */
+  }
+  const next = mintDemoIdentity();
+  try {
+    window.sessionStorage.setItem(key, JSON.stringify(next));
+  } catch {
+    /* ignore */
+  }
+  return next;
+}
 
 function LoginPage() {
   const { user, isPending } = useCurrentUserState();
-  const [email, setEmail] = useState(DEMO_EMAIL);
-  const [password, setPassword] = useState(DEMO_PASSWORD);
-  const [name, setName] = useState(DEMO_NAME);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("Studio Creator");
   const [mode, setMode] = useState<"signin" | "signup">("signup");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +97,7 @@ function LoginPage() {
       setError(
         err instanceof Error
           ? err.message
-          : "Could not enter the studio. Try Create account, or use Enter demo studio.",
+          : "Could not enter the studio. Create an account or try Open a private studio.",
       );
       setBusy(false);
     }
@@ -100,23 +132,23 @@ function LoginPage() {
           className="cos-btn"
           style={{ width: "100%", marginBottom: 14 }}
           disabled={busy}
-          onClick={() =>
+          onClick={() => {
+            const demo = getOrCreateDemoIdentity();
             void enterWithEmail({
-              email: DEMO_EMAIL,
-              password: DEMO_PASSWORD,
-              name: DEMO_NAME,
+              email: demo.email,
+              password: demo.password,
+              name: demo.name,
               preferSignUp: true,
-            })
-          }
+            });
+          }}
         >
-          {busy ? "Opening studio…" : "Enter demo studio"}
+          {busy ? "Opening studio…" : "Open a private studio"}
         </button>
         <p className="sub" style={{ margin: "0 0 18px", textAlign: "center" }}>
-          One click — creates a personal demo account if needed, then opens Studio with sample posts
-          and clips.
+          Creates a unique account in this browser and seeds sample posts and clips for you alone.
         </p>
 
-        <div className="cos-divider">or use email</div>
+        <div className="cos-divider">or use your email</div>
 
         <form className="stack" onSubmit={onEmailAuth}>
           {mode === "signup" ? (
@@ -134,6 +166,7 @@ function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
+              placeholder="you@example.com"
             />
           </div>
           <div className="cos-field">
@@ -175,7 +208,7 @@ function LoginPage() {
                 void signIn(p.providerId).catch((err) => {
                   setError(
                     err instanceof Error
-                      ? `${err.message} — use Enter demo studio if OAuth is blocked here.`
+                      ? `${err.message} — use email or Open a private studio if OAuth isn’t available here.`
                       : "Sign-in failed",
                   );
                   setBusy(false);

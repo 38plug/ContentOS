@@ -44,7 +44,7 @@ import {
   GROK_ISSUER_DEFAULT,
   PREVIEW_ALLOWED_HOSTS,
   PREVIEW_CLIENT_ID,
-  PREVIEW_CLIENT_SECRET,
+  previewClientSecretFromEnv,
 } from "./preview";
 
 // Kick (and share) PGLite bootstrap as soon as the auth server module loads.
@@ -79,11 +79,16 @@ const authDisabled = env("VITE_AUTH_ENABLED") === "false";
 // for any `*.grok-sandbox.com` callback (see `./preview`).
 const grokIssuer = env("GROK_AUTH_ISSUER") ?? GROK_ISSUER_DEFAULT;
 const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? PREVIEW_CLIENT_ID;
-const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? PREVIEW_CLIENT_SECRET;
+const grokClientSecret =
+  env("GROK_AUTH_CLIENT_SECRET") ?? previewClientSecretFromEnv();
 
-/** True when federated sign-in is active (real auth is enforced). */
+/**
+ * True when real auth is enforced: OAuth federation and/or local email/password.
+ * OAuth client secret must come from env (never a checked-in constant).
+ */
 export const authConfigured =
-  !authDisabled && Boolean(grokClientId && grokClientSecret);
+  !authDisabled &&
+  (Boolean(grokClientId && grokClientSecret) || emailAndPasswordEnabled);
 
 // This app's own Better Auth origin. When deployed the deployer injects the
 // public URL. In the sandbox live preview there's no fixed URL (each preview gets
