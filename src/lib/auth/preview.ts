@@ -32,3 +32,11 @@ export const GROK_ISSUER_DEFAULT = "https://auth.grok.me";
  * `https://<preview-host>/api/auth/oauth2/callback/...` the broker allows.
  */
 export const PREVIEW_ALLOWED_HOSTS = ["*.grok-sandbox.com"] as const;
+
+/**
+ * Host patterns for apps published via Cursor (`publish-app`). Email/password
+ * POSTs send `Origin: https://<slug>.apps.grok.bot` — without these in
+ * `trustedOrigins` / dynamic `baseURL.allowedHosts`, Better Auth returns
+ * FORBIDDEN "Invalid origin".
+ */
+export const PUBLISHED_ALLOWED_HOSTS = ["*.apps.grok.bot"] as const;
