@@ -40,6 +40,19 @@ export const authEnabled = import.meta.env.VITE_AUTH_ENABLED !== "false";
 /** The upstream providers to render sign-in buttons for. */
 export { GROK_PROVIDERS };
 
+/**
+ * Providers that can actually complete OAuth on this host.
+ * The shared `grok_preview` broker client only allows `*.grok-sandbox.com`
+ * redirect URIs — showing Google/X on `*.apps.grok.bot` ends in
+ * "Invalid redirect URI" after account pick.
+ */
+export function getAvailableOAuthProviders() {
+  if (typeof window === "undefined") return [];
+  const host = window.location.hostname;
+  if (host.endsWith(".apps.grok.bot")) return [];
+  return [...GROK_PROVIDERS];
+}
+
 // ── Live-preview bearer token ────────────────────────────────────────────────
 // The embedded preview iframe has partitioned cookies, so we keep the session's
 // bearer token in sessionStorage and attach it to every Better Auth request (and

@@ -77,19 +77,29 @@ const authDisabled = env("VITE_AUTH_ENABLED") === "false";
 
 // Broker federation creds: the deployer injects a per-app client when deployed;
 // otherwise fall back to the shared live-preview client, which the broker accepts
-// for any `*.grok-sandbox.com` callback (see `./preview`).
+// ONLY for `*.grok-sandbox.com` callbacks (see `./preview`). Cursor-published
+// apps (`*.apps.grok.bot`, `CURSOR_APP_ID` set) must NOT use `grok_preview` —
+// that produces broker "Invalid redirect URI" after Google/X account pick.
 const grokIssuer = env("GROK_AUTH_ISSUER") ?? GROK_ISSUER_DEFAULT;
-const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? PREVIEW_CLIENT_ID;
+const deployedClientId = env("GROK_AUTH_CLIENT_ID");
+const deployedClientSecret = env("GROK_AUTH_CLIENT_SECRET");
+const previewSecret = previewClientSecretFromEnv();
+const isCursorPublishedApp = Boolean(env("CURSOR_APP_ID"));
+const grokClientId =
+  deployedClientId ?? (isCursorPublishedApp ? undefined : PREVIEW_CLIENT_ID);
 const grokClientSecret =
-  env("GROK_AUTH_CLIENT_SECRET") ?? previewClientSecretFromEnv();
+  deployedClientSecret ?? (isCursorPublishedApp ? undefined : previewSecret);
+
+/** True when Google/X federation through the Grok broker is actually usable. */
+export const oauthFederationEnabled =
+  !authDisabled && Boolean(grokClientId && grokClientSecret);
 
 /**
  * True when real auth is enforced: OAuth federation and/or local email/password.
  * OAuth client secret must come from env (never a checked-in constant).
  */
 export const authConfigured =
-  !authDisabled &&
-  (Boolean(grokClientId && grokClientSecret) || emailAndPasswordEnabled);
+  !authDisabled && (oauthFederationEnabled || emailAndPasswordEnabled);
 
 // This app's own Better Auth origin. When deployed the deployer injects the
 // public URL. In the sandbox live preview there's no fixed URL (each preview gets
@@ -174,7 +184,7 @@ export const SESSION_TOKEN_COOKIE = "__Host-grok-auth.session_token";
 
 // Built separately so the `betterAuth({...})` call stays easy to edit without
 // breaking brackets (models often trip on the conditional plugin spread).
-const grokOAuthPlugin = authConfigured
+const grokOAuthPlugin = oauthFederationEnabled
   ? genericOAuth({
       config: GROK_PROVIDERS.map(({ providerId, idp }) => ({
         providerId,

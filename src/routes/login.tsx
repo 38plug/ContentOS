@@ -1,7 +1,12 @@
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { Clapperboard } from "lucide-react";
 import { useState } from "react";
-import { authClient, authEnabled, GROK_PROVIDERS, signIn } from "@/lib/auth/client";
+import {
+  authClient,
+  authEnabled,
+  getAvailableOAuthProviders,
+  signIn,
+} from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
 
 export const Route = createFileRoute("/login")({ component: LoginPage });
@@ -50,6 +55,7 @@ function LoginPage() {
   const [mode, setMode] = useState<"signin" | "signup">("signup");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const oauthProviders = getAvailableOAuthProviders();
 
   if (!authEnabled) return <Navigate to="/" />;
   if (!isPending && user) return <Navigate to="/" />;
@@ -194,31 +200,40 @@ function LoginPage() {
           </button>
         </form>
 
-        <div className="cos-divider">or</div>
-        <div className="stack">
-          {GROK_PROVIDERS.map((p) => (
-            <button
-              key={p.providerId}
-              type="button"
-              className="cos-btn secondary"
-              disabled={busy}
-              onClick={() => {
-                setBusy(true);
-                setError(null);
-                void signIn(p.providerId).catch((err) => {
-                  setError(
-                    err instanceof Error
-                      ? `${err.message} — use email or Open a private studio if OAuth isn’t available here.`
-                      : "Sign-in failed",
-                  );
-                  setBusy(false);
-                });
-              }}
-            >
-              Continue with {p.label}
-            </button>
-          ))}
-        </div>
+        {oauthProviders.length > 0 ? (
+          <>
+            <div className="cos-divider">or</div>
+            <div className="stack">
+              {oauthProviders.map((p) => (
+                <button
+                  key={p.providerId}
+                  type="button"
+                  className="cos-btn secondary"
+                  disabled={busy}
+                  onClick={() => {
+                    setBusy(true);
+                    setError(null);
+                    void signIn(p.providerId).catch((err) => {
+                      setError(
+                        err instanceof Error
+                          ? `${err.message} — use email or Open a private studio if OAuth isn’t available here.`
+                          : "Sign-in failed",
+                      );
+                      setBusy(false);
+                    });
+                  }}
+                >
+                  Continue with {p.label}
+                </button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="sub" style={{ marginTop: 18, textAlign: "center" }}>
+            Use email or Open a private studio — Google / X sign-in isn’t available on
+            this published host yet.
+          </p>
+        )}
       </div>
     </div>
   );
