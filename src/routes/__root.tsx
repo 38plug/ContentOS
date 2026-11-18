@@ -3,7 +3,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "ATLAS";
+const APP_NAME = "ContentOS";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -14,7 +14,8 @@ export const Route = createRootRoute({
       { name: "theme-color", content: "#07090e" },
       {
         name: "description",
-        content: "ATLAS dual-company command: HireFlow jobs and Qrrupt finance, with JARVIS.",
+        content:
+          "ContentOS — track what you publish and clip YouTube into Shorts, Reels, and TikTok with viral-moment detection.",
       },
     ],
     links: [
@@ -26,7 +27,7 @@ export const Route = createRootRoute({
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap",
       },
     ],
   }),

@@ -10,219 +10,115 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CrewRouteImport } from './routes/crew'
-import { Route as VoiceRouteImport } from './routes/voice'
-import { Route as HireflowIndexRouteImport } from './routes/hireflow/index'
-import { Route as HireflowCandidatesRouteImport } from './routes/hireflow/candidates'
-import { Route as HireflowEmployersRouteImport } from './routes/hireflow/employers'
-import { Route as HireflowInterviewsRouteImport } from './routes/hireflow/interviews'
-import { Route as HireflowJobsRouteImport } from './routes/hireflow/jobs'
-import { Route as HireflowPipelineRouteImport } from './routes/hireflow/pipeline'
-import { Route as HireflowRegisterRouteImport } from './routes/hireflow/register'
-import { Route as HireflowTasksRouteImport } from './routes/hireflow/tasks'
-import { Route as QrruptIndexRouteImport } from './routes/qrrupt/index'
-import { Route as QrruptCalendarRouteImport } from './routes/qrrupt/calendar'
-import { Route as QrruptLedgerRouteImport } from './routes/qrrupt/ledger'
-import { Route as QrruptTasksRouteImport } from './routes/qrrupt/tasks'
+import { Route as ClipsRouteImport } from './routes/clips'
+import { Route as LibraryRouteImport } from './routes/library'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ClipIndexRouteImport } from './routes/clip.index'
+import { Route as ClipClipIdRouteImport } from './routes/clip.$clipId'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CrewRoute = CrewRouteImport.update({
-  id: '/crew',
-  path: '/crew',
+const ClipsRoute = ClipsRouteImport.update({
+  id: '/clips',
+  path: '/clips',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VoiceRoute = VoiceRouteImport.update({
-  id: '/voice',
-  path: '/voice',
+const LibraryRoute = LibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HireflowIndexRoute = HireflowIndexRouteImport.update({
-  id: '/hireflow/',
-  path: '/hireflow/',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HireflowCandidatesRoute = HireflowCandidatesRouteImport.update({
-  id: '/hireflow/candidates',
-  path: '/hireflow/candidates',
+const ClipIndexRoute = ClipIndexRouteImport.update({
+  id: '/clip/',
+  path: '/clip/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HireflowEmployersRoute = HireflowEmployersRouteImport.update({
-  id: '/hireflow/employers',
-  path: '/hireflow/employers',
+const ClipClipIdRoute = ClipClipIdRouteImport.update({
+  id: '/clip/$clipId',
+  path: '/clip/$clipId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HireflowInterviewsRoute = HireflowInterviewsRouteImport.update({
-  id: '/hireflow/interviews',
-  path: '/hireflow/interviews',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HireflowJobsRoute = HireflowJobsRouteImport.update({
-  id: '/hireflow/jobs',
-  path: '/hireflow/jobs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HireflowPipelineRoute = HireflowPipelineRouteImport.update({
-  id: '/hireflow/pipeline',
-  path: '/hireflow/pipeline',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HireflowRegisterRoute = HireflowRegisterRouteImport.update({
-  id: '/hireflow/register',
-  path: '/hireflow/register',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HireflowTasksRoute = HireflowTasksRouteImport.update({
-  id: '/hireflow/tasks',
-  path: '/hireflow/tasks',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const QrruptIndexRoute = QrruptIndexRouteImport.update({
-  id: '/qrrupt/',
-  path: '/qrrupt/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const QrruptCalendarRoute = QrruptCalendarRouteImport.update({
-  id: '/qrrupt/calendar',
-  path: '/qrrupt/calendar',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const QrruptLedgerRoute = QrruptLedgerRouteImport.update({
-  id: '/qrrupt/ledger',
-  path: '/qrrupt/ledger',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const QrruptTasksRoute = QrruptTasksRouteImport.update({
-  id: '/qrrupt/tasks',
-  path: '/qrrupt/tasks',
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/crew': typeof CrewRoute
-  '/voice': typeof VoiceRoute
-  '/hireflow/candidates': typeof HireflowCandidatesRoute
-  '/hireflow/employers': typeof HireflowEmployersRoute
-  '/hireflow/interviews': typeof HireflowInterviewsRoute
-  '/hireflow/jobs': typeof HireflowJobsRoute
-  '/hireflow/pipeline': typeof HireflowPipelineRoute
-  '/hireflow/register': typeof HireflowRegisterRoute
-  '/hireflow/tasks': typeof HireflowTasksRoute
-  '/qrrupt/calendar': typeof QrruptCalendarRoute
-  '/qrrupt/ledger': typeof QrruptLedgerRoute
-  '/qrrupt/tasks': typeof QrruptTasksRoute
-  '/hireflow/': typeof HireflowIndexRoute
-  '/qrrupt/': typeof QrruptIndexRoute
+  '/clips': typeof ClipsRoute
+  '/library': typeof LibraryRoute
+  '/login': typeof LoginRoute
+  '/clip/$clipId': typeof ClipClipIdRoute
+  '/clip/': typeof ClipIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/crew': typeof CrewRoute
-  '/voice': typeof VoiceRoute
-  '/hireflow/candidates': typeof HireflowCandidatesRoute
-  '/hireflow/employers': typeof HireflowEmployersRoute
-  '/hireflow/interviews': typeof HireflowInterviewsRoute
-  '/hireflow/jobs': typeof HireflowJobsRoute
-  '/hireflow/pipeline': typeof HireflowPipelineRoute
-  '/hireflow/register': typeof HireflowRegisterRoute
-  '/hireflow/tasks': typeof HireflowTasksRoute
-  '/qrrupt/calendar': typeof QrruptCalendarRoute
-  '/qrrupt/ledger': typeof QrruptLedgerRoute
-  '/qrrupt/tasks': typeof QrruptTasksRoute
-  '/hireflow': typeof HireflowIndexRoute
-  '/qrrupt': typeof QrruptIndexRoute
+  '/clips': typeof ClipsRoute
+  '/library': typeof LibraryRoute
+  '/login': typeof LoginRoute
+  '/clip/$clipId': typeof ClipClipIdRoute
+  '/clip': typeof ClipIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/crew': typeof CrewRoute
-  '/voice': typeof VoiceRoute
-  '/hireflow/candidates': typeof HireflowCandidatesRoute
-  '/hireflow/employers': typeof HireflowEmployersRoute
-  '/hireflow/interviews': typeof HireflowInterviewsRoute
-  '/hireflow/jobs': typeof HireflowJobsRoute
-  '/hireflow/pipeline': typeof HireflowPipelineRoute
-  '/hireflow/register': typeof HireflowRegisterRoute
-  '/hireflow/tasks': typeof HireflowTasksRoute
-  '/qrrupt/calendar': typeof QrruptCalendarRoute
-  '/qrrupt/ledger': typeof QrruptLedgerRoute
-  '/qrrupt/tasks': typeof QrruptTasksRoute
-  '/hireflow/': typeof HireflowIndexRoute
-  '/qrrupt/': typeof QrruptIndexRoute
+  '/clips': typeof ClipsRoute
+  '/library': typeof LibraryRoute
+  '/login': typeof LoginRoute
+  '/clip/$clipId': typeof ClipClipIdRoute
+  '/clip/': typeof ClipIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/crew'
-    | '/voice'
-    | '/hireflow/candidates'
-    | '/hireflow/employers'
-    | '/hireflow/interviews'
-    | '/hireflow/jobs'
-    | '/hireflow/pipeline'
-    | '/hireflow/register'
-    | '/hireflow/tasks'
-    | '/qrrupt/calendar'
-    | '/qrrupt/ledger'
-    | '/qrrupt/tasks'
-    | '/hireflow/'
-    | '/qrrupt/'
+    | '/clips'
+    | '/library'
+    | '/login'
+    | '/clip/$clipId'
+    | '/clip/'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/crew'
-    | '/voice'
-    | '/hireflow/candidates'
-    | '/hireflow/employers'
-    | '/hireflow/interviews'
-    | '/hireflow/jobs'
-    | '/hireflow/pipeline'
-    | '/hireflow/register'
-    | '/hireflow/tasks'
-    | '/qrrupt/calendar'
-    | '/qrrupt/ledger'
-    | '/qrrupt/tasks'
-    | '/hireflow'
-    | '/qrrupt'
+    | '/clips'
+    | '/library'
+    | '/login'
+    | '/clip/$clipId'
+    | '/clip'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/'
-    | '/crew'
-    | '/voice'
-    | '/hireflow/candidates'
-    | '/hireflow/employers'
-    | '/hireflow/interviews'
-    | '/hireflow/jobs'
-    | '/hireflow/pipeline'
-    | '/hireflow/register'
-    | '/hireflow/tasks'
-    | '/qrrupt/calendar'
-    | '/qrrupt/ledger'
-    | '/qrrupt/tasks'
-    | '/hireflow/'
-    | '/qrrupt/'
+    | '/clips'
+    | '/library'
+    | '/login'
+    | '/clip/$clipId'
+    | '/clip/'
+    | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CrewRoute: typeof CrewRoute
-  VoiceRoute: typeof VoiceRoute
-  HireflowCandidatesRoute: typeof HireflowCandidatesRoute
-  HireflowEmployersRoute: typeof HireflowEmployersRoute
-  HireflowInterviewsRoute: typeof HireflowInterviewsRoute
-  HireflowJobsRoute: typeof HireflowJobsRoute
-  HireflowPipelineRoute: typeof HireflowPipelineRoute
-  HireflowRegisterRoute: typeof HireflowRegisterRoute
-  HireflowTasksRoute: typeof HireflowTasksRoute
-  QrruptCalendarRoute: typeof QrruptCalendarRoute
-  QrruptLedgerRoute: typeof QrruptLedgerRoute
-  QrruptTasksRoute: typeof QrruptTasksRoute
-  HireflowIndexRoute: typeof HireflowIndexRoute
-  QrruptIndexRoute: typeof QrruptIndexRoute
+  ClipsRoute: typeof ClipsRoute
+  LibraryRoute: typeof LibraryRoute
+  LoginRoute: typeof LoginRoute
+  ClipClipIdRoute: typeof ClipClipIdRoute
+  ClipIndexRoute: typeof ClipIndexRoute
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -234,102 +130,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/crew': {
-      id: '/crew'
-      path: '/crew'
-      fullPath: '/crew'
-      preLoaderRoute: typeof CrewRouteImport
+    '/clips': {
+      id: '/clips'
+      path: '/clips'
+      fullPath: '/clips'
+      preLoaderRoute: typeof ClipsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/voice': {
-      id: '/voice'
-      path: '/voice'
-      fullPath: '/voice'
-      preLoaderRoute: typeof VoiceRouteImport
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/hireflow/': {
-      id: '/hireflow/'
-      path: '/hireflow'
-      fullPath: '/hireflow/'
-      preLoaderRoute: typeof HireflowIndexRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/hireflow/candidates': {
-      id: '/hireflow/candidates'
-      path: '/hireflow/candidates'
-      fullPath: '/hireflow/candidates'
-      preLoaderRoute: typeof HireflowCandidatesRouteImport
+    '/clip/': {
+      id: '/clip/'
+      path: '/clip'
+      fullPath: '/clip/'
+      preLoaderRoute: typeof ClipIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/hireflow/employers': {
-      id: '/hireflow/employers'
-      path: '/hireflow/employers'
-      fullPath: '/hireflow/employers'
-      preLoaderRoute: typeof HireflowEmployersRouteImport
+    '/clip/$clipId': {
+      id: '/clip/$clipId'
+      path: '/clip/$clipId'
+      fullPath: '/clip/$clipId'
+      preLoaderRoute: typeof ClipClipIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/hireflow/interviews': {
-      id: '/hireflow/interviews'
-      path: '/hireflow/interviews'
-      fullPath: '/hireflow/interviews'
-      preLoaderRoute: typeof HireflowInterviewsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hireflow/jobs': {
-      id: '/hireflow/jobs'
-      path: '/hireflow/jobs'
-      fullPath: '/hireflow/jobs'
-      preLoaderRoute: typeof HireflowJobsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hireflow/pipeline': {
-      id: '/hireflow/pipeline'
-      path: '/hireflow/pipeline'
-      fullPath: '/hireflow/pipeline'
-      preLoaderRoute: typeof HireflowPipelineRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hireflow/register': {
-      id: '/hireflow/register'
-      path: '/hireflow/register'
-      fullPath: '/hireflow/register'
-      preLoaderRoute: typeof HireflowRegisterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/hireflow/tasks': {
-      id: '/hireflow/tasks'
-      path: '/hireflow/tasks'
-      fullPath: '/hireflow/tasks'
-      preLoaderRoute: typeof HireflowTasksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/qrrupt/': {
-      id: '/qrrupt/'
-      path: '/qrrupt'
-      fullPath: '/qrrupt/'
-      preLoaderRoute: typeof QrruptIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/qrrupt/calendar': {
-      id: '/qrrupt/calendar'
-      path: '/qrrupt/calendar'
-      fullPath: '/qrrupt/calendar'
-      preLoaderRoute: typeof QrruptCalendarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/qrrupt/ledger': {
-      id: '/qrrupt/ledger'
-      path: '/qrrupt/ledger'
-      fullPath: '/qrrupt/ledger'
-      preLoaderRoute: typeof QrruptLedgerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/qrrupt/tasks': {
-      id: '/qrrupt/tasks'
-      path: '/qrrupt/tasks'
-      fullPath: '/qrrupt/tasks'
-      preLoaderRoute: typeof QrruptTasksRouteImport
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -337,20 +177,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CrewRoute: CrewRoute,
-  VoiceRoute: VoiceRoute,
-  HireflowCandidatesRoute: HireflowCandidatesRoute,
-  HireflowEmployersRoute: HireflowEmployersRoute,
-  HireflowInterviewsRoute: HireflowInterviewsRoute,
-  HireflowJobsRoute: HireflowJobsRoute,
-  HireflowPipelineRoute: HireflowPipelineRoute,
-  HireflowRegisterRoute: HireflowRegisterRoute,
-  HireflowTasksRoute: HireflowTasksRoute,
-  QrruptCalendarRoute: QrruptCalendarRoute,
-  QrruptLedgerRoute: QrruptLedgerRoute,
-  QrruptTasksRoute: QrruptTasksRoute,
-  HireflowIndexRoute: HireflowIndexRoute,
-  QrruptIndexRoute: QrruptIndexRoute,
+  ClipsRoute: ClipsRoute,
+  LibraryRoute: LibraryRoute,
+  LoginRoute: LoginRoute,
+  ClipClipIdRoute: ClipClipIdRoute,
+  ClipIndexRoute: ClipIndexRoute,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
