@@ -364,7 +364,8 @@ function ClipEditor() {
               <div>
                 <h2>Growth copy</h2>
                 <p className="sub">
-                  Auto tags, caption, description, SEO title — Shorts / Reels / TikTok.
+                  Free built-in packages — tags, caption, description, SEO title for Shorts /
+                  Reels / TikTok. No API key needed.
                 </p>
               </div>
               <button type="button" className="cos-btn secondary" disabled={busy} onClick={() => void onRegenSeo()}>

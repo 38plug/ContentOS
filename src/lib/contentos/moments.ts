@@ -28,7 +28,7 @@ function windowAround(center: number, length: number, duration: number): { start
   return { start: Math.round(start * 10) / 10, end: Math.round(end * 10) / 10 };
 }
 
-/** Heuristic viral-moment candidates when xAI is unavailable or as a baseline. */
+/** Free built-in viral-moment candidates (no paid API). */
 export function heuristicMoments(durationSec: number, title: string): MomentDraft[] {
   const duration = Math.max(20, durationSec);
   const clipLen = clamp(Math.round(duration * (duration < 60 ? 0.35 : 0.08)), Math.min(12, duration - 2), Math.min(45, Math.max(12, duration - 1)));

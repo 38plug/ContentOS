@@ -8,23 +8,17 @@ import { buildDemoClipBundle, demoContentItems } from "./seed";
 import { buildSeoPackage, suggestedFileName } from "./seo";
 import type { Aspect, CaptionCue, DashboardStats, Platform, SeoPackage, Status } from "./types";
 import { ASPECTS, PLATFORMS, STATUSES } from "./types";
-import { enhanceMomentReasons } from "./xai-moments";
 import { resolveYoutubeMeta } from "./youtube";
 
 async function buildMomentsForSource(
   userId: string,
   sourceId: string,
   title: string,
-  channelTitle: string | null,
+  _channelTitle: string | null,
   durationSec: number,
 ) {
-  const drafts = await enhanceMomentReasons(
-    title,
-    channelTitle,
-    durationSec,
-    heuristicMoments(durationSec, title),
-  );
-  return draftsToMoments(drafts, sourceId, userId);
+  // Free built-in moment scoring — no paid API required.
+  return draftsToMoments(heuristicMoments(durationSec, title), sourceId, userId);
 }
 
 async function ensureSeeded(userId: string) {
