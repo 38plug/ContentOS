@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-19T17:56:43.115Z",
+  "title": "Design System: ContentOS",
+  "extensions": {
+    "colorMeta": {
+      "ink": {
+        "role": "neutral",
+        "displayName": "Deep Ink",
+        "canonical": "#07090e",
+        "tonalRamp": ["#05070b", "#07090e", "#0c1018", "#10151f", "#151c28", "#243042", "#8b97a8", "#eef3f8"]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Ink Well",
+        "canonical": "#0c1018",
+        "tonalRamp": ["#05070b", "#07090e", "#0c1018", "#10151f", "#151c28", "#1c2738", "#243042", "#8b97a8"]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Panel Steel",
+        "canonical": "#10151f",
+        "tonalRamp": ["#07090e", "#0c1018", "#10151f", "#151c28", "#1c2738", "#243042", "#3a4b63", "#8b97a8"]
+      },
+      "panel-2": {
+        "role": "neutral",
+        "displayName": "Panel Lift",
+        "canonical": "#151c28",
+        "tonalRamp": ["#0c1018", "#10151f", "#151c28", "#1c2738", "#243042", "#3a4b63", "#8b97a8", "#eef3f8"]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Seam",
+        "canonical": "#243042",
+        "tonalRamp": ["#10151f", "#151c28", "#1c2738", "#243042", "#3a4b63", "#5a6b82", "#8b97a8", "#c5ced8"]
+      },
+      "fg": {
+        "role": "neutral",
+        "displayName": "Tissue",
+        "canonical": "#eef3f8",
+        "tonalRamp": ["#243042", "#3a4b63", "#8b97a8", "#b7c2ce", "#d5dde6", "#eef3f8", "#f6f8fb", "#ffffff"]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Steel Copy",
+        "canonical": "#8b97a8",
+        "tonalRamp": ["#243042", "#3a4b63", "#5a6b82", "#8b97a8", "#a8b3c2", "#c5ced8", "#dce3ea", "#eef3f8"]
+      },
+      "lime": {
+        "role": "primary",
+        "displayName": "Electric Lime",
+        "canonical": "#c8f542",
+        "tonalRamp": ["#3d4f10", "#5c7a14", "#7ea61c", "#a3d428", "#c8f542", "#d6f76e", "#e4fa9a", "#f3fcd0"]
+      },
+      "lime-dim": {
+        "role": "primary",
+        "displayName": "Lime Veil",
+        "canonical": "rgba(200, 245, 66, 0.14)",
+        "tonalRamp": ["rgba(200,245,66,0.06)", "rgba(200,245,66,0.10)", "rgba(200,245,66,0.14)", "rgba(200,245,66,0.22)", "rgba(200,245,66,0.35)", "rgba(200,245,66,0.55)", "#c8f542", "#e4fa9a"]
+      },
+      "ink-on-lime": {
+        "role": "primary",
+        "displayName": "Ink on Lime",
+        "canonical": "#08100a",
+        "tonalRamp": ["#050a06", "#08100a", "#0c1810", "#142418", "#24382a", "#3a5544", "#8b97a8", "#eef3f8"]
+      },
+      "field-well": {
+        "role": "neutral",
+        "displayName": "Field Well",
+        "canonical": "#0a0f16",
+        "tonalRamp": ["#05070b", "#07090e", "#0a0f16", "#10151f", "#151c28", "#243042", "#8b97a8", "#eef3f8"]
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "Rose Fault",
+        "canonical": "#ff8f9f",
+        "tonalRamp": ["#4a1820", "#7a2432", "#b03a4c", "#e85a70", "#ff8f9f", "#ffb0bb", "#ffd0d6", "#ffe8eb"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page titles, login masthead, viral scores, Shorts captions." },
+      "headline": { "displayName": "Headline", "purpose": "Panel h2 titles." },
+      "title": { "displayName": "Title", "purpose": "Row titles, user name, button labels." },
+      "body": { "displayName": "Body", "purpose": "Supporting copy, leads, moment reasons." },
+      "label": { "displayName": "Label", "purpose": "Uppercase field labels and copy-block headers." },
+      "mono": { "displayName": "Mono", "purpose": "Timecodes, metrics, keyboard chips." }
+    },
+    "shadows": [
+      { "name": "brand-mark", "value": "0 0 0 1px rgba(200, 245, 66, 0.35), 0 10px 30px rgba(200, 245, 66, 0.18)", "purpose": "Lime brand square only." },
+      { "name": "cta-rest", "value": "0 8px 28px rgba(200, 245, 66, 0.18)", "purpose": "Primary button rest bloom." },
+      { "name": "login-card", "value": "0 30px 80px rgba(0, 0, 0, 0.45)", "purpose": "Auth card cushion when no rail exists." },
+      { "name": "phone-chassis", "value": "0 24px 60px rgba(0, 0, 0, 0.45)", "purpose": "Shorts phone mock." },
+      { "name": "focus-bloom", "value": "0 0 0 3px rgba(200, 245, 66, 0.12)", "purpose": "Input/select focus. Never a blue ring." },
+      { "name": "active-inset", "value": "inset 0 0 0 1px rgba(200, 245, 66, 0.15)", "purpose": "Selected library item or calendar today." }
+    ],
+    "motion": [
+      { "name": "rise", "value": "480ms ease", "purpose": "cos-rise: 8px translateY entrance on stats, moments, login." },
+      { "name": "nav", "value": "160ms ease", "purpose": "Nav and row background/color transitions." },
+      { "name": "cta", "value": "140ms ease", "purpose": "Primary button lift + brightness." },
+      { "name": "caption-pop", "value": "280ms ease-out", "purpose": "Shorts caption beat change." }
+    ],
+    "breakpoints": [
+      { "name": "week-collapse", "value": "1100px" },
+      { "name": "rail-to-dock", "value": "980px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one irreversible action on a pane: Clip YouTube, Open a private studio, Make clip.",
+      "html": "<button class=\"ds-btn-primary\">Clip YouTube</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 11px; padding: 11px 16px; font-family: Manrope, Segoe UI, sans-serif; font-weight: 700; font-size: 0.88rem; background: #c8f542; color: #08100a; box-shadow: 0 8px 28px rgba(200, 245, 66, 0.18); transition: transform 140ms ease, filter 140ms ease; } .ds-btn-primary:hover { filter: brightness(1.05); transform: translateY(-1px); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 8px 28px rgba(200, 245, 66, 0.18), 0 0 0 3px rgba(200, 245, 66, 0.12); } .ds-btn-primary:disabled { opacity: 0.55; transform: none; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Supporting action: Queue, New post, email submit.",
+      "html": "<button class=\"ds-btn-secondary\">New post</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 11px; padding: 11px 16px; font-family: Manrope, Segoe UI, sans-serif; font-weight: 700; font-size: 0.88rem; background: #151c28; color: #eef3f8; border: 1px solid #243042; box-shadow: none; } .ds-btn-secondary:hover { border-color: #3a4b63; } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(200, 245, 66, 0.12); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Quiet action: Sign out, Open library, mode toggle.",
+      "html": "<button class=\"ds-btn-ghost\">Sign out</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid #243042; background: transparent; color: #8b97a8; border-radius: 10px; padding: 10px 12px; font-family: Manrope, Segoe UI, sans-serif; font-size: 0.82rem; } .ds-btn-ghost:hover { color: #eef3f8; border-color: #3a4b63; } .ds-btn-ghost:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(200, 245, 66, 0.12); }"
+    },
+    {
+      "name": "Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Ink well with uppercase steel label; lime bloom on focus.",
+      "html": "<label class=\"ds-field\"><span>Email</span><input type=\"email\" placeholder=\"you@example.com\" /></label>",
+      "css": ".ds-field { display: grid; gap: 7px; font-family: Manrope, Segoe UI, sans-serif; } .ds-field span { font-size: 0.75rem; color: #8b97a8; font-weight: 650; letter-spacing: 0.04em; text-transform: uppercase; } .ds-field input { background: #0a0f16; border: 1px solid #243042; color: #eef3f8; border-radius: 10px; padding: 10px 12px; outline: none; font: inherit; } .ds-field input:focus { border-color: rgba(200, 245, 66, 0.55); box-shadow: 0 0 0 3px rgba(200, 245, 66, 0.12); } .ds-field input::placeholder { color: #8b97a8; }"
+    },
+    {
+      "name": "Rail Nav",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Desktop 240px rail row. Active is lime text on lime veil.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link\">Studio</a><a class=\"ds-nav-link ds-nav-link-active\">Clip</a></nav>",
+      "css": ".ds-nav { display: flex; flex-direction: column; gap: 4px; font-family: Manrope, Segoe UI, sans-serif; } .ds-nav-link { display: flex; align-items: center; min-height: 42px; padding: 0 12px; border-radius: 10px; color: #8b97a8; font-size: 0.92rem; font-weight: 550; text-decoration: none; } .ds-nav-link:hover { color: #eef3f8; background: rgba(200, 245, 66, 0.14); } .ds-nav-link-active { color: #c8f542; background: rgba(200, 245, 66, 0.14); }"
+    },
+    {
+      "name": "Status Pill",
+      "kind": "chip",
+      "refersTo": "chip-pill",
+      "description": "Export status and compact metadata.",
+      "html": "<span class=\"ds-pill\">preview</span>",
+      "css": ".ds-pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 4px 9px; font-family: Manrope, Segoe UI, sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.02em; background: rgba(200, 245, 66, 0.14); color: #c8f542; border: 1px solid rgba(200, 245, 66, 0.22); }"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel-card",
+      "description": "Default working surface for lists and splits.",
+      "html": "<section class=\"ds-panel\"><h2>Recent posts</h2><p>Your content tracker — platforms, status, performance.</p></section>",
+      "css": ".ds-panel { background: rgba(16, 21, 31, 0.88); border: 1px solid #243042; border-radius: 16px; padding: 18px; color: #eef3f8; font-family: Manrope, Segoe UI, sans-serif; } .ds-panel h2 { margin: 0; font-family: Syne, Avenir Next, sans-serif; font-size: 1.05rem; letter-spacing: -0.03em; } .ds-panel p { margin: 6px 0 0; color: #8b97a8; font-size: 0.82rem; }"
+    },
+    {
+      "name": "Login Card",
+      "kind": "card",
+      "refersTo": "panel-card",
+      "description": "Full-page auth gate before the rail exists.",
+      "html": "<div class=\"ds-login\"><span class=\"ds-mark\">CO</span><h1>Content<span>OS</span></h1><p>Track posts and clip YouTube into Shorts packages.</p><button class=\"ds-btn-primary\" style=\"width:100%\">Open a private studio</button></div>",
+      "css": ".ds-login { width: min(440px, 100%); border: 1px solid #243042; background: rgba(12, 16, 24, 0.92); border-radius: 20px; padding: 28px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45); color: #eef3f8; font-family: Manrope, Segoe UI, sans-serif; } .ds-login h1 { font-family: Syne, Avenir Next, sans-serif; font-size: 2rem; letter-spacing: -0.045em; margin: 14px 0 8px; } .ds-login h1 span { color: #c8f542; } .ds-login p { color: #8b97a8; margin: 0 0 22px; line-height: 1.5; } .ds-mark { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: #c8f542; color: #08100a; font-family: Syne, Avenir Next, sans-serif; font-weight: 700; box-shadow: 0 0 0 1px rgba(200, 245, 66, 0.35), 0 10px 30px rgba(200, 245, 66, 0.18); } .ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 11px; padding: 11px 16px; font-weight: 700; background: #c8f542; color: #08100a; }"
+    },
+    {
+      "name": "Shorts Phone",
+      "kind": "custom",
+      "refersTo": "panel-card",
+      "description": "Vertical viral preview with burned-in captions and lime punch word.",
+      "html": "<div class=\"ds-phone\"><i class=\"ds-notch\"></i><div class=\"ds-stage\"><div class=\"ds-caption\">WAIT FOR <em>IT</em></div></div></div>",
+      "css": ".ds-phone { max-width: 220px; margin: 0 auto; padding: 10px 10px 18px; border-radius: 28px; background: linear-gradient(160deg, #1a1f2a 0%, #0a0d12 55%, #121820 100%); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 24px 60px rgba(0,0,0,0.45); } .ds-notch { display: block; width: 64px; height: 8px; margin: 4px auto 10px; border-radius: 999px; background: #05070b; } .ds-stage { position: relative; aspect-ratio: 9/16; border-radius: 18px; overflow: hidden; background: #000; } .ds-caption { position: absolute; left: 50%; bottom: 28%; transform: translateX(-50%); width: 88%; text-align: center; font-family: Syne, Avenir Next, sans-serif; font-weight: 800; font-size: 1.05rem; line-height: 1.12; letter-spacing: -0.03em; text-transform: uppercase; color: #fff; -webkit-text-stroke: 1.4px #000; paint-order: stroke fill; } .ds-caption em { font-style: normal; color: #c8f542; -webkit-text-stroke: 1.4px #000; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Deep-Ink Cutting Room",
+    "overview": "ContentOS is a night-shift editorial desk: almost-black ink, steel panel seams, and a single electric-lime marker. Surfaces are opaque instrument panels, not frosted glass. The lime is a cutting tool — brand mark, active nav, primary CTA, viral scores, Shorts highlight words — not a wash across the room.\n\nDensity is generous and operational. The authenticated shell is a 240px sticky rail plus a working canvas (28px / 36px padding). Login is a centered 440px card before any chrome exists. Motion is a short rise (translateY(8px) over ~480ms) and a 1px CTA lift on hover. The world rejects SaaS white, second accents (blue/purple/gold as brand), and filling large interiors with solid lime.",
+    "keyCharacteristics": [
+      "Near-black ink ground with a faint lime bloom (top-right) and a cool atmospheric wash (bottom-left) that is not a token",
+      "Opaque ink panels with 1px #243042 seams",
+      "Syne for display titles, Manrope for the working voice, IBM Plex Mono for timecodes and metrics",
+      "Lime as a marker: brand square, active states, primary CTA, score numerals",
+      "Vertical Shorts phone stage as the signature artifact, not a marketing hero",
+      "Desktop rail + mobile five-tab dock; no sidebar on small screens"
+    ],
+    "rules": [
+      { "name": "The Lime Rarity Rule", "body": "#c8f542 is a marker. It belongs on the brand square, the one irreversible CTA on a pane, active nav, scores, and caption highlights. It does not fill large panel interiors.", "section": "colors" },
+      { "name": "The Steel-Not-Gray Rule", "body": "Text, borders, and muted copy stay in the cool steel family. Neutral gray and white cards are out of world.", "section": "colors" },
+      { "name": "The Two-Voice Rule", "body": "Syne signs the room. Manrope does the work. Do not set body copy in Syne or headlines in a third face.", "section": "typography" },
+      { "name": "The Opaque Desk Rule", "body": "Panels are ink slabs with a seam. Do not restyle them into frosted glass or a flat #111 rectangle “for contrast.”", "section": "elevation" },
+      { "name": "The One-Pixel Lift Rule", "body": "Hover on primary CTAs is translateY(-1px) and brightness(1.05). Anything larger leaves the cutting room.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do build new panes from .cos-panel / .cos-stat / .cos-login-card and the radius steps (10 / 12 / 14 / 16 / 20 / 28).",
+      "Do keep Syne on titles, scores, and Shorts captions; Manrope on body, forms, and nav; mono on timecodes.",
+      "Do treat #c8f542 as a marker: brand square, one primary CTA, active nav, scores, caption highlights.",
+      "Do collapse the rail into the five-tab dock under 980px and keep 18px page gutters.",
+      "Do keep hover to a 1px lift, a brighter seam, or lime veil — not a color swap into another world.",
+      "Do keep Shorts captions uppercase Syne with a black stroke and lime on the punch word."
+    ],
+    "donts": [
+      "Don't introduce opaque white or slate cards, Inter/system display faces, or a second accent (blue, purple, gold) as brand.",
+      "Don't fill large surfaces with solid #c8f542.",
+      "Don't restyle panels into glassmorphism or a marketing hero/kicker stack. This is an operate surface.",
+      "Don't use hard offset drop shadows or default blue focus rings.",
+      "Don't promote page-title eyebrows into a required system element — the live .cos-kicker is a defect to retire, not a pattern to copy.",
+      "Don't expand Lucide glyph-icon language as identity; the brand square and lime marker already sign the room."
+    ]
+  }
+}
