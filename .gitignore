@@ -9,3 +9,6 @@ screenshots/
 
 attachments/
 artifacts/
+
+# Stitch / Cursor MCP secrets (never commit API keys)
+.cursor/mcp.json
