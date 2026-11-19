@@ -1,24 +1,26 @@
 /**
- * Shared LIVE-PREVIEW OAuth client (server-only — NEVER import from the client).
+ * Shared LIVE-PREVIEW OAuth client metadata (server-only — NEVER import from the client).
  *
  * The sandbox serves each live preview on a dynamic `https://*.grok-sandbox.com`
  * URL, which can't be pre-registered per app. The broker instead exposes ONE
  * shared "preview" client that accepts any
- * `https://*.grok-sandbox.com/api/auth/oauth2/callback/*`
- * (broker: `app-builder-deployer/auth/src/preview-oauth.ts`). Baking it here lets
- * the live preview do REAL sign-in — no demo/mock users — with no platform
- * injection. When deployed the deployer injects a per-app
- * `GROK_AUTH_*` that overrides these (see `server.ts`).
+ * `https://*.grok-sandbox.com/api/auth/oauth2/callback/*`.
  *
- * These MUST equal the broker's `GROK_PREVIEW_CLIENT_ID` /
- * `GROK_PREVIEW_CLIENT_SECRET` (set in the broker's Vercel env; the broker stores
- * only the secret's `base64url(SHA-256)` hash). This is a dedicated, low-privilege
- * client (preview-only, `*.grok-sandbox.com`) — rotate it by regenerating the
- * broker env var and this constant together.
+ * The preview client **secret must come from the environment**
+ * (`GROK_AUTH_CLIENT_SECRET` or `GROK_PREVIEW_CLIENT_SECRET`) — never from a
+ * checked-in constant. Deployed apps inject a per-app `GROK_AUTH_*` pair.
+ * Local email/password sign-in does not need this secret.
  */
 export const PREVIEW_CLIENT_ID = "grok_preview";
-export const PREVIEW_CLIENT_SECRET =
-  "8bcdb7fc5a33874ad933ca568918d5790388a0795e44c4d1dea691f801b17ec5";
+
+/** Preview / fallback OAuth client secret from env only (no hardcoded value). */
+export function previewClientSecretFromEnv(): string | undefined {
+  const value =
+    process.env.GROK_AUTH_CLIENT_SECRET?.trim() ||
+    process.env.GROK_PREVIEW_CLIENT_SECRET?.trim() ||
+    "";
+  return value || undefined;
+}
 
 /** The shared auth broker issuer (OIDC discovery lives under it). */
 export const GROK_ISSUER_DEFAULT = "https://auth.grok.me";
@@ -30,3 +32,11 @@ export const GROK_ISSUER_DEFAULT = "https://auth.grok.me";
  * `https://<preview-host>/api/auth/oauth2/callback/...` the broker allows.
  */
 export const PREVIEW_ALLOWED_HOSTS = ["*.grok-sandbox.com"] as const;
+
+/**
+ * Host patterns for apps published via Cursor (`publish-app`). Email/password
+ * POSTs send `Origin: https://<slug>.apps.grok.bot` — without these in
+ * `trustedOrigins` / dynamic `baseURL.allowedHosts`, Better Auth returns
+ * FORBIDDEN "Invalid origin".
+ */
+export const PUBLISHED_ALLOWED_HOSTS = ["*.apps.grok.bot"] as const;

@@ -44,7 +44,8 @@ import {
   GROK_ISSUER_DEFAULT,
   PREVIEW_ALLOWED_HOSTS,
   PREVIEW_CLIENT_ID,
-  PREVIEW_CLIENT_SECRET,
+  PUBLISHED_ALLOWED_HOSTS,
+  previewClientSecretFromEnv,
 } from "./preview";
 
 // Kick (and share) PGLite bootstrap as soon as the auth server module loads.
@@ -76,14 +77,29 @@ const authDisabled = env("VITE_AUTH_ENABLED") === "false";
 
 // Broker federation creds: the deployer injects a per-app client when deployed;
 // otherwise fall back to the shared live-preview client, which the broker accepts
-// for any `*.grok-sandbox.com` callback (see `./preview`).
+// ONLY for `*.grok-sandbox.com` callbacks (see `./preview`). Cursor-published
+// apps (`*.apps.grok.bot`, `CURSOR_APP_ID` set) must NOT use `grok_preview` —
+// that produces broker "Invalid redirect URI" after Google/X account pick.
 const grokIssuer = env("GROK_AUTH_ISSUER") ?? GROK_ISSUER_DEFAULT;
-const grokClientId = env("GROK_AUTH_CLIENT_ID") ?? PREVIEW_CLIENT_ID;
-const grokClientSecret = env("GROK_AUTH_CLIENT_SECRET") ?? PREVIEW_CLIENT_SECRET;
+const deployedClientId = env("GROK_AUTH_CLIENT_ID");
+const deployedClientSecret = env("GROK_AUTH_CLIENT_SECRET");
+const previewSecret = previewClientSecretFromEnv();
+const isCursorPublishedApp = Boolean(env("CURSOR_APP_ID"));
+const grokClientId =
+  deployedClientId ?? (isCursorPublishedApp ? undefined : PREVIEW_CLIENT_ID);
+const grokClientSecret =
+  deployedClientSecret ?? (isCursorPublishedApp ? undefined : previewSecret);
 
-/** True when federated sign-in is active (real auth is enforced). */
-export const authConfigured =
+/** True when Google/X federation through the Grok broker is actually usable. */
+export const oauthFederationEnabled =
   !authDisabled && Boolean(grokClientId && grokClientSecret);
+
+/**
+ * True when real auth is enforced: OAuth federation and/or local email/password.
+ * OAuth client secret must come from env (never a checked-in constant).
+ */
+export const authConfigured =
+  !authDisabled && (oauthFederationEnabled || emailAndPasswordEnabled);
 
 // This app's own Better Auth origin. When deployed the deployer injects the
 // public URL. In the sandbox live preview there's no fixed URL (each preview gets
@@ -95,6 +111,13 @@ const explicitBaseURL = env("BETTER_AUTH_URL");
 // Explicit `string[]` (not a readonly tuple) — Better Auth's DynamicBaseURLConfig
 // requires a mutable `allowedHosts: string[]`.
 const previewAllowedHosts: string[] = [...PREVIEW_ALLOWED_HOSTS];
+const publishedAllowedHosts: string[] = [...PUBLISHED_ALLOWED_HOSTS];
+let explicitBaseHost: string | undefined;
+try {
+  if (explicitBaseURL) explicitBaseHost = new URL(explicitBaseURL).host;
+} catch {
+  explicitBaseHost = undefined;
+}
 // Local `npm run dev` (port 8080 contract). Browsers may send Origin as any of
 // these for the same server — trusting only `localhost` rejects `127.0.0.1` and
 // breaks email/password with "Invalid origin".
@@ -103,27 +126,38 @@ const LOCAL_DEV_ORIGINS: string[] = [
   "http://127.0.0.1:8080",
   "http://[::1]:8080",
 ];
-const baseURL = explicitBaseURL ?? {
-  // Include loopback hosts so dynamic baseURL resolves for local email/password
-  // (not only the preview wildcard).
-  allowedHosts: [...previewAllowedHosts, "localhost", "127.0.0.1", "[::1]"],
+
+function originWildcards(hosts: string[]): string[] {
+  return hosts.flatMap((host) => [host, `https://${host}`, `http://${host}`]);
+}
+
+const dynamicAllowedHosts: string[] = [
+  ...previewAllowedHosts,
+  ...publishedAllowedHosts,
+  "localhost",
+  "127.0.0.1",
+  "[::1]",
+  ...(explicitBaseHost ? [explicitBaseHost] : []),
+];
+
+// Prefer dynamic baseURL so published `*.apps.grok.bot` hosts resolve even when
+// BETTER_AUTH_URL is missing or drifts from the live slug URL.
+const baseURL = {
+  allowedHosts: dynamicAllowedHosts,
   // `auto` → trust both http:// and https:// expansions of allowedHosts
-  // (preview is https; local dev is http).
+  // (preview + published are https; local dev is http).
   protocol: "auto" as const,
-  fallback: "http://localhost:8080",
+  fallback: explicitBaseURL ?? "http://localhost:8080",
 };
 
 // Origins Better Auth accepts on credentialed POSTs (sign-up/sign-in, etc.).
 // Missing entries here surface as FORBIDDEN "Invalid origin".
-const trustedOrigins: string[] = explicitBaseURL
-  ? [explicitBaseURL, ...LOCAL_DEV_ORIGINS]
-  : [
-      // Host wildcards (matched against Origin's host)
-      ...previewAllowedHosts,
-      // Full-origin wildcards (matched against Origin)
-      ...previewAllowedHosts.flatMap((host) => [`https://${host}`, `http://${host}`]),
-      ...LOCAL_DEV_ORIGINS,
-    ];
+const trustedOrigins: string[] = [
+  ...(explicitBaseURL ? [explicitBaseURL] : []),
+  ...originWildcards(previewAllowedHosts),
+  ...originWildcards(publishedAllowedHosts),
+  ...LOCAL_DEV_ORIGINS,
+];
 
 const databaseUrl = env("DATABASE_URL");
 
@@ -150,7 +184,7 @@ export const SESSION_TOKEN_COOKIE = "__Host-grok-auth.session_token";
 
 // Built separately so the `betterAuth({...})` call stays easy to edit without
 // breaking brackets (models often trip on the conditional plugin spread).
-const grokOAuthPlugin = authConfigured
+const grokOAuthPlugin = oauthFederationEnabled
   ? genericOAuth({
       config: GROK_PROVIDERS.map(({ providerId, idp }) => ({
         providerId,

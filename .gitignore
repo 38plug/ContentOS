@@ -1,0 +1,14 @@
+node_modules/
+.vercel/
+dist/
+.DS_Store
+*.log
+screenshots/
+.grok/preview.log
+.grok/preview.pid
+
+attachments/
+artifacts/
+
+# Stitch / Cursor MCP secrets (never commit API keys)
+.cursor/mcp.json

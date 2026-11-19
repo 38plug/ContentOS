@@ -38,9 +38,20 @@ let baselinePath = null;
 let baselineResolveError = null;
 if (baselineRequested) {
   try {
-    baselinePath = checkedOutputPath(realpathSync(args.baseline), ["/workspace"], "baseline");
+    // Allow /workspace itself even when it is a symlink into the repo checkout
+    // (cloud agents often mount the project that way). realpath the allowlist
+    // roots so a resolved baseline under the repo still passes the guard.
+    const workspaceRoot = "/workspace";
+    let allowed = [workspaceRoot];
+    try {
+      allowed.push(realpathSync(workspaceRoot));
+    } catch {
+      /* keep /workspace only */
+    }
+    const resolvedBaseline = realpathSync(args.baseline);
+    baselinePath = checkedOutputPath(resolvedBaseline, allowed, "baseline");
   } catch (err) {
-    baselineResolveError = err?.code ?? "unresolvable path";
+    baselineResolveError = err?.code ?? err?.message ?? "unresolvable path";
   }
   if (baselinePath === outJson) {
     console.error(
