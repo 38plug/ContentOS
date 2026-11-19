@@ -31,6 +31,8 @@ function ClipEditor() {
   const [seo, setSeo] = useState<SeoPackage | null>(null);
   const [seoTab, setSeoTab] = useState<SeoTab>("shorts");
   const [playhead, setPlayhead] = useState(0);
+  const [previewKey, setPreviewKey] = useState(0);
+  const [autoplay, setAutoplay] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -92,9 +94,20 @@ function ClipEditor() {
 
   const embedSrc = useMemo(() => {
     if (!clip?.source) return "";
-    const start = Math.floor(playhead);
-    return `https://www.youtube.com/embed/${clip.source.youtubeId}?start=${start}&rel=0`;
-  }, [clip, playhead]);
+    // Preview the actual edit decision: start at playhead (clamped into the
+    // selection) and hard-stop at OUT so the iframe doesn't keep playing the
+    // rest of the long-form video.
+    const start = Math.max(0, Math.floor(Math.min(Math.max(playhead, inSec), Math.max(inSec, outSec - 1))));
+    const end = Math.max(start + 1, Math.ceil(outSec));
+    return `https://www.youtube.com/embed/${clip.source.youtubeId}?start=${start}&end=${end}&rel=0&modestbranding=1`;
+  }, [clip, playhead, inSec, outSec]);
+
+  function playSelection() {
+    setPlayhead(inSec);
+    setAutoplay(true);
+    setPreviewKey((k) => k + 1);
+    setMessage(`Playing selection ${formatTimecode(inSec)} → ${formatTimecode(outSec)}`);
+  }
 
   async function save(partial?: {
     inSec?: number;
@@ -218,9 +231,22 @@ function ClipEditor() {
         <div className="cos-editor">
           <section className="cos-panel">
             <div className="cos-preview-frame" data-aspect={aspect}>
-              {embedSrc ? <iframe title="Clip preview" src={embedSrc} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /> : null}
+              {embedSrc ? (
+                <iframe
+                  key={`${clip.id}-${previewKey}-${Math.floor(playhead)}-${Math.ceil(outSec)}`}
+                  title="Clip preview"
+                  src={`${embedSrc}&autoplay=${autoplay ? 1 : 0}`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : null}
               {activeCaption ? <div className="cos-caption-overlay">{activeCaption}</div> : null}
             </div>
+            <p className="sub" style={{ marginTop: 8 }}>
+              Preview stops at OUT ({formatTimecode(outSec)}). Selection length{" "}
+              <strong style={{ color: "var(--color-ink)" }}>{formatTimecode(outSec - inSec)}</strong>
+              {outSec - inSec > 45 ? " — trim under ~35s for Shorts/Reels/TikTok." : " · Shorts-friendly."}
+            </p>
 
             <div className="cos-aspect-row">
               {ASPECTS.map((a) => (
@@ -257,6 +283,9 @@ function ClipEditor() {
               <span className="cos-kbd">←</span>/<span className="cos-kbd">→</span> nudge playhead (Shift = 1s)
             </p>
             <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+              <button type="button" className="cos-btn" onClick={playSelection}>
+                Play selection
+              </button>
               <button
                 type="button"
                 className="cos-btn secondary"

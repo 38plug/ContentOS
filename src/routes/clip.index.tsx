@@ -110,7 +110,8 @@ function ClipAnalyze() {
         <section className="cos-panel">
           <h2>Paste a YouTube URL</h2>
           <p className="sub">
-            We pull metadata, rank viral-moment candidates, and open the editor with in/out points.
+            We pull metadata + chapters when available, rank Shorts-length viral windows (≈15–35s),
+            and open the editor with hard in/out points.
           </p>
           <div className="cos-url-bar">
             <input
@@ -183,21 +184,42 @@ function ClipAnalyze() {
 
           {moments.length ? (
             <div className="cos-moments">
-              {moments.map((m, i) => (
-                <article key={m.id} className="cos-moment" style={{ animationDelay: `${i * 70}ms` }}>
-                  <div className="score">{Math.round(m.score * 100)}</div>
-                  <div>
-                    <span className="cos-pill">{reasonLabel(m.reasonType)}</span>
-                    <strong style={{ display: "block", marginTop: 8 }}>
-                      {formatTimecode(m.startSec)} → {formatTimecode(m.endSec)}
-                    </strong>
-                    <p>{m.reasonText}</p>
-                  </div>
-                  <button type="button" className="cos-btn" disabled={busy} onClick={() => void makeClip(m.id)}>
-                    <Scissors size={15} /> Make clip
-                  </button>
-                </article>
-              ))}
+              {moments.map((m, i) => {
+                const dur = Math.max(0, m.endSec - m.startSec);
+                const watchAt = source
+                  ? `${source.youtubeUrl}${source.youtubeUrl.includes("?") ? "&" : "?"}t=${Math.floor(m.startSec)}s`
+                  : null;
+                return (
+                  <article key={m.id} className="cos-moment" style={{ animationDelay: `${i * 70}ms` }}>
+                    <div className="score">{Math.round(m.score * 100)}</div>
+                    <div>
+                      <span className="cos-pill">{reasonLabel(m.reasonType)}</span>
+                      <strong style={{ display: "block", marginTop: 8 }}>
+                        {formatTimecode(m.startSec)} → {formatTimecode(m.endSec)}
+                        <span className="sub" style={{ marginLeft: 8 }}>
+                          · {Math.round(dur)}s cut
+                          {dur > 40 ? " (trim later)" : ""}
+                        </span>
+                      </strong>
+                      <p>{m.reasonText}</p>
+                      {watchAt ? (
+                        <a
+                          className="sub"
+                          href={watchAt}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ color: "var(--color-lime)" }}
+                        >
+                          Preview on YouTube at IN
+                        </a>
+                      ) : null}
+                    </div>
+                    <button type="button" className="cos-btn" disabled={busy} onClick={() => void makeClip(m.id)}>
+                      <Scissors size={15} /> Make clip
+                    </button>
+                  </article>
+                );
+              })}
             </div>
           ) : null}
         </section>

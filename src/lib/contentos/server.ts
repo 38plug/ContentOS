@@ -16,9 +16,10 @@ async function buildMomentsForSource(
   title: string,
   _channelTitle: string | null,
   durationSec: number,
+  chapters: { title: string; startSec: number }[] = [],
 ) {
-  // Free built-in moment scoring — no paid API required.
-  return draftsToMoments(heuristicMoments(durationSec, title), sourceId, userId);
+  // Free built-in viral windows — Shorts-length, start-aligned, chapter-aware.
+  return draftsToMoments(heuristicMoments(durationSec, title, chapters), sourceId, userId);
 }
 
 async function ensureSeeded(userId: string) {
@@ -209,12 +210,14 @@ export const analyzeYoutube = createServerFn({ method: "POST" })
         ${durationSec}, ${meta.thumbnailUrl}, ${meta.channelTitle}
       )
     `;
+    const chapters = meta.chapters.filter((c) => c.startSec < durationSec);
     const moments = await buildMomentsForSource(
       context.userId,
       sourceId,
       meta.title,
       meta.channelTitle,
       durationSec,
+      chapters,
     );
     for (const m of moments) {
       await sql`
@@ -240,6 +243,7 @@ export const analyzeYoutube = createServerFn({ method: "POST" })
       }),
       moments,
       durationEstimated,
+      chapterCount: chapters.length,
     };
   });
 
@@ -268,12 +272,21 @@ export const reanalyzeSourceDuration = createServerFn({ method: "POST" })
       delete from viral_moments
       where source_id = ${data.sourceId} and user_id = ${context.userId}
     `;
+    // Re-fetch chapters for this URL so rebuilt windows stay chapter-aware.
+    let chapters: { title: string; startSec: number }[] = [];
+    try {
+      const meta = await resolveYoutubeMeta(source.youtubeUrl);
+      chapters = meta.chapters.filter((c) => c.startSec < durationSec);
+    } catch {
+      chapters = [];
+    }
     const moments = await buildMomentsForSource(
       context.userId,
       source.id,
       source.title,
       source.channelTitle,
       durationSec,
+      chapters,
     );
     for (const m of moments) {
       await sql`
@@ -289,6 +302,7 @@ export const reanalyzeSourceDuration = createServerFn({ method: "POST" })
       source: { ...source, durationSec },
       moments,
       durationEstimated: false,
+      chapterCount: chapters.length,
     };
   });
 
