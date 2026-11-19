@@ -364,7 +364,12 @@ export const createClipFromMoment = createServerFn({ method: "POST" })
     const source = mapSource(sourceRow);
     const aspect: Aspect =
       data.aspect && ASPECTS.includes(data.aspect) ? data.aspect : "9:16";
-    const captions = defaultCaptions(moment.startSec, moment.endSec, source.title);
+    const captions = defaultCaptions(
+      moment.startSec,
+      moment.endSec,
+      source.title,
+      moment.reasonText,
+    );
     const seo = await buildSeoPackage(source.title, moment.reasonText, source.channelTitle);
     const clipId = uid("clip");
     const title = `${source.title} — ${moment.reasonType.replace("_", " ")}`;

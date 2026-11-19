@@ -593,6 +593,149 @@
   pointer-events: none;
 }
 
+/* Shorts phone stage — vertical viral look with burned captions */
+.cos-shorts-phone {
+  max-width: 340px;
+  margin: 0 auto;
+  padding: 10px 10px 18px;
+  border-radius: 28px;
+  background: linear-gradient(160deg, #1a1f2a 0%, #0a0d12 55%, #121820 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.cos-shorts-notch {
+  width: 96px;
+  height: 8px;
+  margin: 4px auto 10px;
+  border-radius: 999px;
+  background: #05070b;
+}
+
+.cos-shorts-stage {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #000;
+}
+
+.cos-shorts-stage iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  /* Crop 16:9 embed into vertical Shorts framing */
+  transform: scale(1.78);
+  transform-origin: center center;
+}
+
+.cos-shorts-chrome {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, transparent 22%, transparent 62%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+.cos-shorts-meta {
+  position: absolute;
+  left: 12px;
+  right: 56px;
+  bottom: 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+
+.cos-shorts-meta strong {
+  font-size: 0.85rem;
+  font-weight: 750;
+}
+
+.cos-shorts-meta span {
+  font-size: 0.78rem;
+  opacity: 0.92;
+  line-height: 1.25;
+}
+
+.cos-shorts-rail {
+  position: absolute;
+  right: 10px;
+  bottom: 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: #fff;
+}
+
+.cos-shorts-rail span {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.cos-shorts-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 28%;
+  transform: translateX(-50%);
+  width: min(92%, 300px);
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.15rem, 4.6vw, 1.55rem);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: #fff;
+  -webkit-text-stroke: 1.4px #000;
+  paint-order: stroke fill;
+  text-shadow:
+    0 0 2px #000,
+    2px 2px 0 #000,
+    -1px -1px 0 #000;
+  pointer-events: none;
+  animation: cos-caption-pop 0.28s ease-out;
+}
+
+.cos-shorts-caption em {
+  font-style: normal;
+  color: var(--color-lime);
+  -webkit-text-stroke: 1.4px #000;
+}
+
+@keyframes cos-caption-pop {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+.cos-shorts-footer {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  pointer-events: none;
+}
+
 .cos-aspect-row {
   display: flex;
   gap: 8px;

@@ -1,4 +1,5 @@
 import { uid } from "@/lib/id";
+import { buildShortsCaptions } from "./shorts-captions";
 import type { ReasonType, ViralMoment } from "./types";
 import type { YoutubeChapter } from "./youtube";
 
@@ -178,15 +179,15 @@ export function heuristicMoments(
     }
   }
 
-  // 4) Ultra-short source: offer the whole usable span as one primary clip.
-  if (duration <= 45) {
+  // 4) Ultra-short / native Shorts source: whole take is the product.
+  if (duration <= 60) {
     const whole = windowFrom(0, Math.max(6, duration - 0.25), duration);
     pushUnique(drafts, {
       startSec: whole.start,
       endSec: whole.end,
-      score: 0.96,
+      score: 0.99,
       reasonType: "hook",
-      reasonText: `Full short-form package — source is already ${Math.round(duration)}s; ship nearly the whole take.`,
+      reasonText: `Native short-form package — ${Math.round(duration)}s source ships as one Shorts cut with captions.`,
     });
   }
 
@@ -211,28 +212,7 @@ export function draftsToMoments(
   }));
 }
 
-export function defaultCaptions(inSec: number, outSec: number, title: string) {
-  const span = Math.max(4, outSec - inSec);
-  const mid = inSec + span / 2;
-  const hook = title.split(/[-|:–—]/)[0]?.trim().slice(0, 48) || "Watch this";
-  return [
-    {
-      id: uid("cue"),
-      startSec: inSec,
-      endSec: Math.min(outSec, inSec + Math.min(3.2, span * 0.28)),
-      text: hook,
-    },
-    {
-      id: uid("cue"),
-      startSec: mid - 1.2,
-      endSec: Math.min(outSec, mid + 2.2),
-      text: "This is the part people replay",
-    },
-    {
-      id: uid("cue"),
-      startSec: Math.max(inSec, outSec - Math.min(4.5, span * 0.28)),
-      endSec: outSec,
-      text: "Follow for the next cut",
-    },
-  ];
+/** Default captions = Shorts-style dense beats (word-highlight markup). */
+export function defaultCaptions(inSec: number, outSec: number, title: string, reasonText = "") {
+  return buildShortsCaptions(inSec, outSec, title, reasonText);
 }

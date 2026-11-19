@@ -1,8 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Copy, Download, Library, RefreshCw } from "lucide-react";
+import { Copy, Download, Library, RefreshCw, Subtitles } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { AppShell, AuthGate } from "@/components/contentos/app-shell";
+import { ShortsStage } from "@/components/contentos/shorts-stage";
 import { ClipTimeline } from "@/components/contentos/timeline";
+import { buildShortsCaptions, captionsToVtt } from "@/lib/contentos/shorts-captions";
 import { getClip, regenerateSeo, updateClip, upsertContentItem } from "@/lib/contentos/server";
 import type { Aspect, CaptionCue, Clip, SeoPackage } from "@/lib/contentos/types";
 import { ASPECTS, formatTimecode } from "@/lib/contentos/types";
@@ -179,6 +181,28 @@ function ClipEditor() {
     setMessage("Downloaded edit decision package");
   }
 
+  function downloadVtt() {
+    if (!clip) return;
+    const vtt = captionsToVtt(captions, clip.title);
+    const blob = new Blob([vtt], { type: "text/vtt" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = (clip.exportPackage.fileName || "clip").replace(/\.mp4$/i, "") + ".shorts.vtt";
+    a.click();
+    URL.revokeObjectURL(a.href);
+    setMessage("Downloaded Shorts captions (.vtt)");
+  }
+
+  function regenShortsCaptions() {
+    const next = buildShortsCaptions(inSec, outSec, clip?.title ?? "Clip", clip?.title ?? "");
+    setCaptions(next);
+    setPlayhead(inSec);
+    setPreviewKey((k) => k + 1);
+    setAutoplay(true);
+    setMessage("Generated Shorts-style captions — Play selection to preview");
+    void save({ captions: next, inSec, outSec });
+  }
+
   async function addToLibrary() {
     if (!clip) return;
     setBusy(true);
@@ -230,22 +254,39 @@ function ClipEditor() {
       ) : (
         <div className="cos-editor">
           <section className="cos-panel">
-            <div className="cos-preview-frame" data-aspect={aspect}>
-              {embedSrc ? (
-                <iframe
-                  key={`${clip.id}-${previewKey}-${Math.floor(playhead)}-${Math.ceil(outSec)}`}
-                  title="Clip preview"
-                  src={`${embedSrc}&autoplay=${autoplay ? 1 : 0}`}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : null}
-              {activeCaption ? <div className="cos-caption-overlay">{activeCaption}</div> : null}
-            </div>
+            {aspect === "9:16" && clip.source ? (
+              <ShortsStage
+                youtubeId={clip.source.youtubeId}
+                embedSrc={embedSrc}
+                autoplay={autoplay}
+                iframeKey={`${clip.id}-${previewKey}-${Math.floor(playhead)}-${Math.ceil(outSec)}`}
+                caption={activeCaption}
+                title={clip.title}
+                channelTitle={clip.source.channelTitle}
+                clipLabel={`${formatTimecode(inSec)}–${formatTimecode(outSec)}`}
+              />
+            ) : (
+              <div className="cos-preview-frame" data-aspect={aspect}>
+                {embedSrc ? (
+                  <iframe
+                    key={`${clip.id}-${previewKey}-${Math.floor(playhead)}-${Math.ceil(outSec)}`}
+                    title="Clip preview"
+                    src={`${embedSrc}&autoplay=${autoplay ? 1 : 0}`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : null}
+                {activeCaption ? (
+                  <div className="cos-caption-overlay cos-shorts-caption" style={{ bottom: "14%" }}>
+                    {activeCaption.replace(/\*/g, "")}
+                  </div>
+                ) : null}
+              </div>
+            )}
             <p className="sub" style={{ marginTop: 8 }}>
-              Preview stops at OUT ({formatTimecode(outSec)}). Selection length{" "}
+              Shorts-style preview with burned captions. Stops at OUT ({formatTimecode(outSec)}). Length{" "}
               <strong style={{ color: "var(--color-ink)" }}>{formatTimecode(outSec - inSec)}</strong>
-              {outSec - inSec > 45 ? " — trim under ~35s for Shorts/Reels/TikTok." : " · Shorts-friendly."}
+              {outSec - inSec > 45 ? " — trim under ~35s for Shorts." : " · Shorts-ready."}
             </p>
 
             <div className="cos-aspect-row">
@@ -286,6 +327,9 @@ function ClipEditor() {
               <button type="button" className="cos-btn" onClick={playSelection}>
                 Play selection
               </button>
+              <button type="button" className="cos-btn secondary" onClick={regenShortsCaptions} disabled={busy}>
+                <Subtitles size={15} /> Auto Shorts captions
+              </button>
               <button
                 type="button"
                 className="cos-btn secondary"
@@ -298,14 +342,19 @@ function ClipEditor() {
               <button type="button" className="cos-btn secondary" onClick={downloadPackage}>
                 <Download size={15} /> Export package
               </button>
+              <button type="button" className="cos-btn secondary" onClick={downloadVtt}>
+                <Download size={15} /> Captions .vtt
+              </button>
               <button type="button" className="cos-btn secondary" disabled={busy} onClick={() => void addToLibrary()}>
                 <Library size={15} /> Add to library
               </button>
             </div>
 
             <div style={{ marginTop: 18 }}>
-              <h2>Caption cues</h2>
-              <p className="sub">Timed text over the clip — edit freely.</p>
+              <h2>Shorts captions</h2>
+              <p className="sub">
+                Dense on-screen beats like viral Shorts — wrap a word in *stars* to highlight it.
+              </p>
               <div className="cos-list">
                 {captions.map((cue, idx) => (
                   <div key={cue.id} className="cos-copy-block">

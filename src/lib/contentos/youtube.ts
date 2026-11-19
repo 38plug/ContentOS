@@ -11,6 +11,10 @@ export type YoutubeChapter = {
   startSec: number;
 };
 
+export function isYoutubeShortsUrl(input: string): boolean {
+  return /youtube\.com\/shorts\//i.test(input.trim());
+}
+
 export function extractYoutubeId(input: string): string | null {
   const raw = input.trim();
   if (!raw) return null;
@@ -203,7 +207,11 @@ export async function resolveYoutubeMeta(input: string): Promise<YoutubeMeta> {
   const youtubeUrl = youtubeWatchUrl(youtubeId);
   const [oembed, player] = await Promise.all([fetchOembed(youtubeUrl), fetchPlayerPayload(youtubeId)]);
   const estimated = !(player.durationSec && player.durationSec > 0);
-  const durationSec = estimated ? ESTIMATED_DURATION_SEC : player.durationSec!;
+  const durationSec = estimated
+    ? isYoutubeShortsUrl(input) || isYoutubeShortsUrl(youtubeUrl)
+      ? 45
+      : ESTIMATED_DURATION_SEC
+    : player.durationSec!;
   return {
     youtubeId,
     youtubeUrl,

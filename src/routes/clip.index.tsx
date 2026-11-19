@@ -23,7 +23,7 @@ function ClipAnalyzePage() {
 
 function ClipAnalyze() {
   const navigate = useNavigate();
-  const [url, setUrl] = useState("https://www.youtube.com/watch?v=jNQXAC9IVRw");
+  const [url, setUrl] = useState("https://www.youtube.com/shorts/-ANRNYZW7aI");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [source, setSource] = useState<YoutubeSource | null>(null);
@@ -110,8 +110,8 @@ function ClipAnalyze() {
         <section className="cos-panel">
           <h2>Paste a YouTube URL</h2>
           <p className="sub">
-            We pull metadata + chapters when available, rank Shorts-length viral windows (≈15–35s),
-            and open the editor with hard in/out points.
+            Paste a YouTube or Shorts URL — we rank Shorts-length cuts, open a vertical preview with
+            burned-in captions, and export caption + edit packages.
           </p>
           <div className="cos-url-bar">
             <input
